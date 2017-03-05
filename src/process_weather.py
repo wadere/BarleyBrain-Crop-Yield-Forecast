@@ -10,8 +10,8 @@ from datetime import datetime
 
 MIN_YEAR = 2010
 MAX_YEAR = 2016
-RAW_WEATHER_FILE = '../data/weather/weather_all.csv'
-PROC_WEATHER_FILE = '../data/weather/weather_processed.csv'
+RAW_WEATHER_FILE = 'data/weather/weather_all.csv'
+PROC_WEATHER_FILE = 'data/weather/weather_clean.csv'
 
 # =====================================================================
 
@@ -33,10 +33,6 @@ def weather_clean(df,syear,eyear):
     df['year_month'] = pd.to_numeric([('20' + (x.split(' ')[0]).split('/')[0])*1 for x in df['aDate']])
     df['year'] = df['dropme']
     df.drop('dropme', axis=1)
-    # df = pd.read_csv(RAW_WEATHER_FILE, parse_dates=[0], date_parser=lambda x: datetime.strptime(x.split(' ')[0], '%M/%d/%YY'), dayfirst=False)
-
-    xdf = pd.read_csv('data/weather/weather_part_processed.csv')
-
 
     print 'Filter out columns not needed'
     df_times = df.filter(like='Time',axis=1).columns.tolist()
@@ -131,5 +127,5 @@ if __name__ == '__main__':
     df = weather_clean(df,MIN_YEAR,MAX_YEAR)
 
     # # save out the file for later combining with yield data
-    # print 'Saving processed weather file to..:', PROC_WEATHER_FILE
-    # df_years.to_csv(PROC_WEATHER_FILE)
+    print 'Saving cleaned weather file to..:', PROC_WEATHER_FILE
+    df.to_csv(PROC_WEATHER_FILE)

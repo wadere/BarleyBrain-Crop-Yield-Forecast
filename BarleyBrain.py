@@ -24,11 +24,8 @@ from src.process_weather import *
 # ====== Key file locations =================================
 # ===========================================================
 RAW_WEATHER_FILE = 'data/weather/weather_all.csv'
-PROCESSED_WEATHER = 'data/weather/weather_processed_xxx.csv'
-RAW_YIELD = "data/yield/yield_raw_data_all.csv"
+# RAW_YIELD = "data/yield/yield_raw_data_all.csv"
 PROCESSED_YIELD = "data/yield/yield_proc_data.csv"
-TRAIN_MODEL = 'data/df_train.csv'
-# TEST_MODEL = 'data/df_test.csv'
 COMBINED = 'data/combined.csv'
 IMAGES_FOLDER = 'images/'
 
