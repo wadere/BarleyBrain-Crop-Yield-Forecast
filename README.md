@@ -1,4 +1,6 @@
-## Welcome to GitHub Pages
+![testimage](images/crop_region_2015.png)
+
+## Welcome to Barley Brain!
 
 You can use the [editor on GitHub](https://github.com/wadere/Barley_Brain/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
 
