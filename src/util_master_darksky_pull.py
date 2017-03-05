@@ -41,7 +41,7 @@ def make_unixdate(xdate):
 
 
 if __name__ == '__main__':
-    API_KEY = "b96da89533e3d3e1f40f560603a30fee"
+    API_KEY = ""
     lat = 37.8267
     lon = -122.4233
     county = 'WELD'

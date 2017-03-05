@@ -42,7 +42,7 @@ def combine_save_csv(raw_path,csv_files):
 if __name__ == '__main__':
 
     # =====================================================================
-    RAW_WEATHER_FILES = '/Users/rew/git/BarleyYield/data/darksky/'
+    RAW_WEATHER_FILES = '../data/darksky/'
     PROCESSED_WEATHER = '../data/counties/weather_all.csv'
     # =====================================================================
 
