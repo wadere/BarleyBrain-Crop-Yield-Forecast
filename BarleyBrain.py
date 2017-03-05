@@ -34,7 +34,7 @@ IMAGES_FOLDER = 'images/'
 # ====== Key CONSTANTS ======================================
 # ===========================================================
 
-TRAIN = False                   # ==> Set mode model is in
+TRAIN = True                   # ==> Set mode model is in
 MIN_YEAR = 2010                 # ==> Set min year to earliest
 MAX_YEAR = 2016                 # ==> Max year for full TTS data
 TEST_SPLIT = 2014               # ==> Sets year Train test split
@@ -235,7 +235,7 @@ if __name__ == '__main__':
     print 'Running model on TRAIN? ', TRAIN
     if TRAIN == False:
         # =========== Load pickle of training session ========
-        with open('pickled/reg_train_ada_'+STATE+'_xtr.pkl') as f:
+        with open('data/pickles/reg_train_ada_'+STATE+'_xtr.pkl') as f:
             reg_ada = pickle.load(f)
     else:
         # ===========  Run Adaboost fit-pred  ================
@@ -268,7 +268,7 @@ if __name__ == '__main__':
 
     # =========== Save pickle of training session ===========
     if TRAIN == True:
-        with open('pickled/reg_train_ada_'+STATE+'_xtr.pkl', 'wb') as f:
+        with open('data/pickles/reg_train_ada_'+STATE+'_xtr.pkl', 'wb') as f:
             pickle.dump(reg_ada, f)
 
     # =========== Plot overall y_true and y_predicted ===========
