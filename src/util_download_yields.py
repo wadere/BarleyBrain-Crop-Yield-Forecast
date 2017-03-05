@@ -62,8 +62,8 @@ def get_gov_yield(syear=2010, eyear=2017, state='CO'):
 if __name__ == '__main__':
 
     MIN_YEAR = 2010
-    MAX_YEAR = 2017
-    YIELD_FILE = '../data/yield/yield_raw_data_state.csv'
+    MAX_YEAR = 2020
+    # YIELD_FILE = '../data/yield/yield_raw_data_state.csv'
     PROCESSED_YIELD_FILE = "../data/yield/yield_proc_data.csv"
 
     df = get_gov_yield(MIN_YEAR,MAX_YEAR,None)
