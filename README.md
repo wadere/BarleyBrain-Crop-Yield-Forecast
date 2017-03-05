@@ -21,6 +21,7 @@ Weather data is downloaded in advance (for ease, data back to 2010 is data/weath
 YIELDS:  The USDA (https://www.usda.gov/wps/portal/usda/usdahome) has an online collection of historically reported crop yields.  This data is automatically collected by the model for cleaning combining with the weather data.
 Since Barley was the focus, only the barley data was downloaded.  Note that all state data gets downloaded so that in the future the model can be easily extended to any state or region.
 Yield data is downloaded when the model runs and junk columns are dropped.
+
  
 #### Model & Performance
 Three models were run on the data, Ordinay Least Squares, RandomForests, and Adaboost.
@@ -29,8 +30,11 @@ Data is loaded from the combined file and split into train and test sets.  For t
 
 
 
-TRAIN-TEST SPLIT RESULTS:
-![tts_image](images/train_test_rmse.png)
+TEST RESULTS:
+
+The model initally way overfit on the train data, and after reviewing in-stage Adaboost scoring, model was 'tuned' to remove over fitting as much as possible.  Resulting RMSE fit was 12.6 bussels/acre.  Not bad given the wide range of things farms can do to their fields in the course of a year.  The following chart shows model preducted yield (green line) and actual yield.
+
+![test_image](images/test_results1.png)
 
 
 
