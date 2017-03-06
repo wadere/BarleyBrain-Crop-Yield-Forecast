@@ -5,7 +5,7 @@ import os
 import cPickle as pickle
 
 import matplotlib as mpl
-mpl.use('Agg')
+# mpl.use('Agg')
 from matplotlib import pyplot as plt
 import seaborn as sns
 
@@ -35,7 +35,7 @@ IMAGES_FOLDER = 'images/'
 
 TRAIN = False                   # ==> Set mode model is in
 MIN_YEAR = 2010                 # ==> Set min year to earliest
-MAX_YEAR = 2017                 # ==> Max year for full TTS data
+MAX_YEAR = 2016                 # ==> Max year for full TTS data
 TEST_SPLIT = 2014               # ==> Sets year Train test split
 STATE = 'ALL'                   # ==> ALL is ['CO', 'MT', 'ID', 'WY']
 
@@ -194,9 +194,8 @@ def feature_importance(cols,feat_imps):
     df['feat'] = cols
     df['imp'] = feat_imps
     df.sort_values('imp',ascending=False, inplace=True)
-    df = df.loc[df['imp'] > 0]
-    df.reset_index()
-    df.drop('index')
+    # df = df.loc[df['imp'] > 0]
+    df = df.reset_index()
     return df
 
 
@@ -215,12 +214,13 @@ if __name__ == '__main__':
 
     # Code block for fine tuning and EDA experimentation
     # ==============================================
-    _dummy = df_join[df_join['cyield'] >= 50]
+    _dummy = df_join[df_join['cyield'] >= 40]
     _dummy = df_join[df_join['cyield'] <= 180]
     if not STATE == 'ALL': _dummy = df_join[df_join.state != 'ID']
     sfl = _dummy
     _dummy.pop('year')
     _dummy.pop('county')
+    _dummy.pop('humidity')
     _dummy = pd.get_dummies((_dummy))
     # ==============================================
 
@@ -230,6 +230,7 @@ if __name__ == '__main__':
     y = _dummy.pop('cyield')
     X = _dummy
 
+    print X.columns.tolist()
     # RUN ADABOOST  lr=0.862, n_est=5
     # =============================================
     print '\n\n'
@@ -237,6 +238,7 @@ if __name__ == '__main__':
     if TRAIN == False:
         # =========== Load pickle of training session ========
         with open('data/pickles/reg_ada_'+STATE+'_xtr.pkl') as f:
+            print 'Loading pickle'
             reg_ada = pickle.load(f)
     else:
         # ===========  Run Adaboost fit-pred  ================
@@ -269,7 +271,8 @@ if __name__ == '__main__':
 
     # =========== Save pickle of training session ===========
     if TRAIN == True:
-        with open('data/pickles/reg_train_ada_'+STATE+'_xtr.pkl', 'wb') as f:
+        with open('data/pickles/reg_ada_'+STATE+'_xtr.pkl', 'wb') as f:
+            print 'Saving pickle'
             pickle.dump(reg_ada, f)
 
     # =========== Plot overall y_true and y_predicted ===========
@@ -318,3 +321,16 @@ if __name__ == '__main__':
     plt.savefig(IMAGES_FOLDER + 'model_performance_test.jpg')
     plt.show()
 
+    feat_imp.set_index('feat')
+    fig= plt.subplot()
+    ax = sns.barplot(feat_imp.feat[:10], feat_imp.imp[:10], palette='Blues_d')
+    plt.xticks(rotation=30)
+    plt.savefig(IMAGES_FOLDER + 'features1.png')
+    plt.close()
+
+    feat_imp.set_index('feat')
+    fig= plt.subplot()
+    ax = sns.barplot(feat_imp.feat[1:10], feat_imp.imp[1:10], palette='Blues_d')
+    plt.xticks(rotation=30)
+    plt.savefig(IMAGES_FOLDER + 'features2.png')
+    plt.close()
