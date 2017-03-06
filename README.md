@@ -23,15 +23,14 @@ Since Barley was the focus, only the barley data was downloaded.  Note that all 
 Yield data is downloaded when the model runs and junk columns are dropped.
 
  
-#### Model & Performance
+#### Model and Performance
 Three models were run on the data, Ordinay Least Squares, RandomForests, and Adaboost.
 Primary selected model was Adaboost, as it provided a the best RMSE (+/- 12 bussels/acre on the test set.)
 Data is loaded from the combined file and split into train and test sets.  For training mode, the model discards all information not within the 2010 to 2014 timeframe. Similary the test case drops years less than and including 2014, leaving must 2015 and 2016 data.
 
 
 
-TEST RESULTS:
-
+#### TEST RESULTS
 The model initally way overfit on the train data, and after reviewing in-stage Adaboost scoring, model was 'tuned' to remove over fitting as much as possible.  Resulting RMSE fit was 12.6 bussels/acre.  Not bad given the wide range of things farms can do to their fields in the course of a year.  The following chart shows model preducted yield (green line) and actual yield.
 
 ![test_image](images/test_results1.png)

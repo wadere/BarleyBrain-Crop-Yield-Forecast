@@ -1,0 +1,17 @@
+body {
+  padding-top: 50px;
+}
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+  color: 'red';
+}
+body {
+    background-color: lightblue;
+}
+
+body {
+    background-image: url("../images/handcuffs.jpg");
+    background-repeat: repeat-x;
+    background-position: center center;
+}

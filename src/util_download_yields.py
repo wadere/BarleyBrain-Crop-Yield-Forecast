@@ -56,7 +56,7 @@ def get_gov_yield(syear=2010, eyear=2017, state='CO'):
     df = df.loc[(df['state_alpha'] == 'MT')|(df['state_alpha'] == 'CO')|(df['state_alpha'] == 'WY')|(df['state_alpha'] == 'ID')]
     # df = df.loc[(df['state_alpha'] == state)]
     # df.drop(df[df.county_name == 'OTHER (COMBINED) COUNTIES'].index, inplace=True)
-    df['irig_flag'] = np.where(df['cyield'] >= 85, 1, 0)
+    df['irig_flag'] = np.where(df['cyield'] >= 75, 1, 0)
     return df
 
 if __name__ == '__main__':
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     MIN_YEAR = 2010
     MAX_YEAR = 2020
     # YIELD_FILE = '../data/yield/yield_raw_data_state.csv'
-    PROCESSED_YIELD_FILE = "data/yield/yield_proc_data.csv"
+    PROCESSED_YIELD_FILE = "../data/yield/yield_proc_data.csv"
 
     df = get_gov_yield(MIN_YEAR,MAX_YEAR,None)
     print 'Saving file'

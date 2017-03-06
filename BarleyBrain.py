@@ -214,8 +214,8 @@ if __name__ == '__main__':
 
     # Code block for fine tuning and EDA experimentation
     # ==============================================
-    _dummy = df_join[df_join['cyield'] >= 40]
-    _dummy = df_join[df_join['cyield'] <= 200]
+    _dummy = df_join[df_join['cyield'] >= 50]
+    _dummy = df_join[df_join['cyield'] <= 180]
     if not STATE == 'ALL': _dummy = df_join[df_join.state != 'ID']
     sfl = _dummy
     _dummy.pop('year')
@@ -239,7 +239,7 @@ if __name__ == '__main__':
             reg_ada = pickle.load(f)
     else:
         # ===========  Run Adaboost fit-pred  ================
-        reg_ada = my_ada(X, y, m_depth=3, n_est=8, rnd=42, lr=0.8225)
+        reg_ada = my_ada(X, y, m_depth=3, n_est=8, rnd=42, lr=1.28225)
 
         # ===========  Do GRIDSEARCH analysis ================
         lr_range = np.linspace(0.1,10,100)
