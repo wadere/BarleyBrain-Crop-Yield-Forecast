@@ -11,7 +11,7 @@ app = Flask(__name__)
 # ===== page routing blocks =====
 @app.route('/', methods = ['GET','POST'])
 def home_page():
-    return render_template('starter-template.html')
+    return render_template('index.html')
 
 @app.route('/score', methods=['GET'])
 def score():
