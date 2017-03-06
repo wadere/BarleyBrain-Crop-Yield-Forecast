@@ -2,10 +2,10 @@ import pandas as pd
 import requests
 import numpy as np
 import os
-from itertools import chain
 import cPickle as pickle
 
-
+import matplotlib as mpl
+mpl.use('Agg')
 from matplotlib import pyplot as plt
 import seaborn as sns
 
@@ -13,7 +13,6 @@ import seaborn as sns
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import AdaBoostRegressor
 from sklearn.metrics import mean_squared_error as mse
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
 
 from src.util_download_yields import *
@@ -34,9 +33,9 @@ IMAGES_FOLDER = 'images/'
 # ====== Key CONSTANTS ======================================
 # ===========================================================
 
-TRAIN = True                   # ==> Set mode model is in
+TRAIN = False                   # ==> Set mode model is in
 MIN_YEAR = 2010                 # ==> Set min year to earliest
-MAX_YEAR = 2016                 # ==> Max year for full TTS data
+MAX_YEAR = 2017                 # ==> Max year for full TTS data
 TEST_SPLIT = 2014               # ==> Sets year Train test split
 STATE = 'ALL'                   # ==> ALL is ['CO', 'MT', 'ID', 'WY']
 
@@ -196,6 +195,8 @@ def feature_importance(cols,feat_imps):
     df['imp'] = feat_imps
     df.sort_values('imp',ascending=False, inplace=True)
     df = df.loc[df['imp'] > 0]
+    df.reset_index()
+    df.drop('index')
     return df
 
 
@@ -235,7 +236,7 @@ if __name__ == '__main__':
     print 'Running model on TRAIN? ', TRAIN
     if TRAIN == False:
         # =========== Load pickle of training session ========
-        with open('data/pickles/reg_train_ada_'+STATE+'_xtr.pkl') as f:
+        with open('data/pickles/reg_ada_'+STATE+'_xtr.pkl') as f:
             reg_ada = pickle.load(f)
     else:
         # ===========  Run Adaboost fit-pred  ================
@@ -274,6 +275,7 @@ if __name__ == '__main__':
     # =========== Plot overall y_true and y_predicted ===========
     res = sfl
     res['y_pred']=y_ada
+    res.to_csv('data/forecast.csv', index=False)
     df_plt = res
     df_plt['y_true'] = y
 
@@ -285,6 +287,7 @@ if __name__ == '__main__':
     plt.ylabel('y_pred (bu/acre)')
     plt.legend()
     plt.savefig(IMAGES_FOLDER + 'model_yt_yp.jpg')
+    plt.show()
 
 
     # # =========== Plot by State y_true and y_predicted ===========
@@ -307,10 +310,11 @@ if __name__ == '__main__':
     fig = plt.subplot(211)
     plt.plot(res.y_true, marker='o', lw=0)
     plt.plot(res.y_pred, lw=2)
-    plt.title(STATE + ' regression performance', fontsize=30);
+    # plt.title(STATE + ' regression performance', fontsize=25);
     plt.xlabel('data-point')
     plt.ylabel('yield (bu/acre)')
     plt.ylim([0, 180])
     plt.title('Model Performance',fontsize=30)
     plt.savefig(IMAGES_FOLDER + 'model_performance_test.jpg')
+    plt.show()
 
