@@ -24,7 +24,7 @@ IMAGES_FOLDER = 'images/'
 # ====== Key CONSTANTS ======================================
 # ===========================================================
 
-TRAIN = True  # ==> Set mode model is in
+TRAIN = False  # ==> Set mode model is in
 MIN_YEAR = 2010  # ==> Set min year to earliest
 MAX_YEAR = 2017  # ==> Max year for full TTS data
 TEST_SPLIT = 2014  # ==> Sets year Train test split
@@ -288,7 +288,6 @@ if __name__ == '__main__':
     plt.ylabel('y_pred (bu/acre)')
     plt.legend()
     plt.savefig(IMAGES_FOLDER + 'model_yt_yp.jpg')
-    plt.show()
 
     # =========== Plot by State y_true and y_predicted ===========
     g = sns.FacetGrid(res, col='irig_flag', hue='state')
@@ -322,7 +321,6 @@ if __name__ == '__main__':
     ax = sns.barplot(feat_imp.feat[:10], feat_imp.imp[:10], palette='Blues_d')
     plt.xticks(rotation=30)
     plt.savefig(IMAGES_FOLDER + 'features1.png')
-    plt.close()
 
     # generate the feature chart less the irig_flag and save it to file
     feat_imp.set_index('feat')
@@ -330,4 +328,3 @@ if __name__ == '__main__':
     ax = sns.barplot(feat_imp.feat[1:10], feat_imp.imp[1:10], palette='Blues_d')
     plt.xticks(rotation=30)
     plt.savefig(IMAGES_FOLDER + 'features2.png')
-    plt.close()
