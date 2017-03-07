@@ -43,6 +43,8 @@ def weather_dates(df, MIN_YEAR, MAX_YEAR):
     :param MAX_YEAR: (end of test set)
     :return:  returns the pre-processed dataframe
     '''
+
+    # work with the dates to get into needed forms for later
     df['dates'] = pd.to_datetime(df['apparentTemperatureMaxTime'], unit='s')
     df['year'] = [x.year for x in df['dates']]
     df['month'] = [x.month for x in df['dates']]
@@ -79,8 +81,6 @@ def yield_dates(df, MIN_YEAR, TEST_SPLIT):
     df.rename(columns={'county_name': 'county', 'Value': 'cyield', 'state_alpha': 'state'}, inplace=True)
     df.drop('Unnamed: 0', axis=1, inplace=True)
 
-    # drop outlier yield less than 40
-
     # split out years
     df = df.drop(df[df.year < MIN_YEAR].index)
     df = df.drop(df[df.year > TEST_SPLIT].index)
@@ -88,7 +88,11 @@ def yield_dates(df, MIN_YEAR, TEST_SPLIT):
 
 
 def join_weather_yield(wdf, ydf):
-    # ========== Work magic on the weather file ==============
+    '''
+    :param wdf: dataframe of weather data
+    :param ydf: dataframe of yield information
+    :return: combined weather/yield df based on state, county, year
+    '''
     wdf.drop('dates', axis=1, inplace=True)
     wdf['county'] = wdf['county'].apply(str.lower)
     DROP_LIST = ['visibility', 'lat', 'long', 'month', 'windBearing', 'precipProbability', 'aveTemp', 'pressure',
@@ -131,7 +135,7 @@ def join_weather_yield(wdf, ydf):
     wdf_years.to_csv(PROC_WEATHER_FILE)
     wdf_years = pd.read_csv(PROC_WEATHER_FILE)
 
-    # ========== Work magic on the yield file ==============
+    # ========== finish the merge and return the dataframe ==============
     ydf.groupby(group_by_columns).mean()
     df_merged = pd.merge(ydf, wdf_years, how='left', on=['county', 'state', 'year'])
     df_merged.dropna(axis=0, how='any', inplace=True)
@@ -167,8 +171,8 @@ def is_under(x, val):
 def my_ada(X, y, m_depth=3, n_est=28, rnd=None, lr=0.8225):
     '''
     quick wrapping function for sklearn ada_boost analysis
-    :param X:
-    :param y:
+    :param X: features
+    :param y: target
     :param m_depth: max depth of Dtree 'stumps'
     :param n_est: number of estimators to use
     :param rnd: sets the random seed if you want
@@ -195,7 +199,6 @@ def feature_importance(cols, feat_imps):
     df.sort_values('imp', ascending=False, inplace=True)
     df = df.loc[df['imp'] > 0]
     df.reset_index()
-    # df.drop('index')
     return df
 
 
@@ -227,9 +230,9 @@ if __name__ == '__main__':
     # ==============================================
     y = _dummy.pop('cyield')
     X = _dummy
-
-    # RUN ADABOOST  lr=0.862, n_est=5
     # =============================================
+
+
     print '\n\n'
     print 'Running model on TRAIN? ', TRAIN
     if TRAIN == False:
@@ -259,19 +262,17 @@ if __name__ == '__main__':
     print 'Adaboost  MSE:   ', ada_mse
     print 'Adaboost RMSE:   ', np.sqrt(ada_mse)
     print '================================================'
-    # print 'Used : ', reg_ada.get_params()
-    print len(X.columns.tolist())
 
     # Extract table of most important features for later use if needed
     feat_imp = feature_importance(X.columns.tolist(), reg_ada.feature_importances_)
-    # print feat_imp
 
     # =========== Save pickle of training session ===========
     if TRAIN == True:
         with open('data/pickles/reg_ada_' + STATE + '_xtr.pkl', 'wb') as f:
             pickle.dump(reg_ada, f)
 
-            # =========== Plot overall y_true and y_predicted ===========
+
+    # prep dataframe of inputs and predictions for plotting and later use
     res = sfl
     res['y_pred'] = y_ada
     res.to_csv('data/forecast.csv', index=False)
@@ -279,7 +280,8 @@ if __name__ == '__main__':
     df_plt['y_true'] = y
 
     plt.close('all')
-    # fig = plt.figure()
+    # =========== Plot by State y_true and y_predicted ===========
+    fig = plt.figure()
     sns.regplot(x='y_true', y='y_pred', data=df_plt, label='state', marker='o', scatter_kws={'s': 80});
     plt.title(STATE + ' regression performance', fontsize=30);
     plt.xlabel('y_true (bu/acre)')
@@ -294,7 +296,7 @@ if __name__ == '__main__':
     plt.xlim(0, 180)
     plt.ylim(0, 180)
     plt.legend()
-    plt.show()
+    plt.savefig(IMAGES_FOLDER + 'facet_irig_2.jpg')
 
     # =========== Plot by IRIG_FLAG y_true and y_predicted ===========
     g = sns.FacetGrid(res, col='state', hue='irig_flag')
@@ -302,9 +304,9 @@ if __name__ == '__main__':
     plt.xlim(0, 180)
     plt.ylim(0, 180)
     plt.legend()
-    plt.savefig
+    plt.savefig(IMAGES_FOLDER + 'facet_irig_1.jpg')
 
-    fig = plt.subplot()
+    fig = plt.figure(figsize=(10,4))
     plt.plot(res.y_true, marker='o', lw=0)
     plt.plot(res.y_pred, lw=2)
     # plt.title(STATE + ' regression performance', fontsize=25);
@@ -312,9 +314,9 @@ if __name__ == '__main__':
     plt.ylabel('yield (bu/acre)')
     plt.ylim([0, 180])
     # plt.title('Model Performance', fontsize=30)
-    plt.savefig(IMAGES_FOLDER + 'model_performance_train.jpg')
-    plt.show()
+    plt.savefig(IMAGES_FOLDER + 'model_performance.jpg')
 
+    # generate the feature chart with the irig_flag and save it to file
     feat_imp.set_index('feat')
     fig = plt.subplot()
     ax = sns.barplot(feat_imp.feat[:10], feat_imp.imp[:10], palette='Blues_d')
@@ -322,6 +324,7 @@ if __name__ == '__main__':
     plt.savefig(IMAGES_FOLDER + 'features1.png')
     plt.close()
 
+    # generate the feature chart less the irig_flag and save it to file
     feat_imp.set_index('feat')
     fig = plt.subplot()
     ax = sns.barplot(feat_imp.feat[1:10], feat_imp.imp[1:10], palette='Blues_d')
