@@ -6,11 +6,11 @@ Barley Brain is a computer model to forecast regional barley yields in Colorado,
 
 #### Technology used
 *  Python
-*  sklearn Adaboost, RandomForests, OLS
 *  LANDSAT
 *  Darksky.net API
-
-
+*  Scikitlearn Adaboost, RandomForests, OLS
+*  Matplotlib, Seaborn, Tableau, Plotly
+*  Flask, Bootstrap
 
 #### Data Collection 
 WEATHER: 
