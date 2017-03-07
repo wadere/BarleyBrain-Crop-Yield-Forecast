@@ -33,7 +33,7 @@ IMAGES_FOLDER = 'images/'
 # ====== Key CONSTANTS ======================================
 # ===========================================================
 
-TRAIN = False                   # ==> Set mode model is in
+TRAIN = True                   # ==> Set mode model is in
 MIN_YEAR = 2010                 # ==> Set min year to earliest
 MAX_YEAR = 2017                 # ==> Max year for full TTS data
 TEST_SPLIT = 2014               # ==> Sets year Train test split
@@ -290,21 +290,21 @@ if __name__ == '__main__':
     plt.savefig(IMAGES_FOLDER + 'model_yt_yp.jpg')
     plt.show()
 
-    # # =========== Plot by State y_true and y_predicted ===========
-    # g = sns.FacetGrid(res, col='irig_flag', hue='state')
-    # g.map(sns.regplot, 'y_true', 'y_pred', label='state', marker='o', scatter_kws={'s':80});
-    # plt.xlim(0, 180)
-    # plt.ylim(0, 180)
-    # plt.legend()
-    # plt.show()
-    #
-    # # =========== Plot by IRIG_FLAG y_true and y_predicted ===========
-    # g = sns.FacetGrid(res, col='state', hue='irig_flag')
-    # g.map(sns.regplot, 'y_true', 'y_pred', label='state', marker='o', scatter_kws={'s':80});
-    # plt.xlim(0, 180)
-    # plt.ylim(0, 180)
-    # plt.legend()
-    # plt.show()
+    # =========== Plot by State y_true and y_predicted ===========
+    g = sns.FacetGrid(res, col='irig_flag', hue='state')
+    g.map(sns.regplot, 'y_true', 'y_pred', label='state', marker='o', scatter_kws={'s':80});
+    plt.xlim(0, 180)
+    plt.ylim(0, 180)
+    plt.legend()
+    plt.show()
+
+    # =========== Plot by IRIG_FLAG y_true and y_predicted ===========
+    g = sns.FacetGrid(res, col='state', hue='irig_flag')
+    g.map(sns.regplot, 'y_true', 'y_pred', label='state', marker='o', scatter_kws={'s':80});
+    plt.xlim(0, 180)
+    plt.ylim(0, 180)
+    plt.legend()
+    plt.savefig
 
 
     fig = plt.subplot(211)
@@ -314,8 +314,8 @@ if __name__ == '__main__':
     plt.xlabel('data-point')
     plt.ylabel('yield (bu/acre)')
     plt.ylim([0, 180])
-    plt.title('Model Performance', fontsize=30)
-    plt.savefig(IMAGES_FOLDER + 'model_performance_test.jpg')
+    # plt.title('Model Performance', fontsize=30)
+    plt.savefig(IMAGES_FOLDER + 'model_performance_train.jpg')
     plt.show()
 
     feat_imp.set_index('feat')
