@@ -1,23 +1,15 @@
-import pandas as pd
-import requests
-import numpy as np
-import os
 import cPickle as pickle
 
-import matplotlib as mpl
-mpl.use('Agg')
-from matplotlib import pyplot as plt
+import numpy as np
+import pandas as pd
 import seaborn as sns
-
-
-from sklearn.tree import DecisionTreeRegressor
+from matplotlib import pyplot as plt
 from sklearn.ensemble import AdaBoostRegressor
 from sklearn.metrics import mean_squared_error as mse
 from sklearn.model_selection import GridSearchCV
-
-from src.util_download_yields import *
+from sklearn.tree import DecisionTreeRegressor
 from src.process_weather import *
-
+from src.util_download_yields import *
 
 # ===========================================================
 # ====== Key file locations =================================
@@ -28,64 +20,68 @@ PROCESSED_YIELD = "data/yield/yield_proc_data.csv"
 COMBINED = 'data/combined.csv'
 IMAGES_FOLDER = 'images/'
 
-
 # ===========================================================
 # ====== Key CONSTANTS ======================================
 # ===========================================================
 
-TRAIN = True                   # ==> Set mode model is in
-MIN_YEAR = 2010                 # ==> Set min year to earliest
-MAX_YEAR = 2017                 # ==> Max year for full TTS data
-TEST_SPLIT = 2014               # ==> Sets year Train test split
-STATE = 'ALL'                   # ==> ALL is ['CO', 'MT', 'ID', 'WY']
+TRAIN = True  # ==> Set mode model is in
+MIN_YEAR = 2010  # ==> Set min year to earliest
+MAX_YEAR = 2017  # ==> Max year for full TTS data
+TEST_SPLIT = 2014  # ==> Sets year Train test split
+STATE = 'ALL'  # ==> ALL is ['CO', 'MT', 'ID', 'WY']
 
 if TRAIN == False:
-    MIN_YEAR = TEST_SPLIT       # ==> 2014
-    MAX_YEAR = MAX_YEAR         # ==> 2016
-    TEST_SPLIT = MAX_YEAR     # ==> 2016
+    MIN_YEAR = TEST_SPLIT  # ==> 2014
+    MAX_YEAR = MAX_YEAR  # ==> 2016
+    TEST_SPLIT = MAX_YEAR  # ==> 2016
 
-def weather_dates(df,MIN_YEAR,MAX_YEAR):
+
+def weather_dates(df, MIN_YEAR, MAX_YEAR):
     '''
     :param df: dataframe containing location specific weather
     :param MIN_YEAR: 2010 (start of training set)
     :param MAX_YEAR: (end of test set)
-    :return:
+    :return:  returns the pre-processed dataframe
     '''
     df['dates'] = pd.to_datetime(df['apparentTemperatureMaxTime'], unit='s')
     df['year'] = [x.year for x in df['dates']]
     df['month'] = [x.month for x in df['dates']]
-    df.drop('aDate', axis = 1, inplace=True)
+    df.drop('aDate', axis=1, inplace=True)
     df['county'] = [x.lower() for x in df['county']]
 
-    #remove times not needed and junk columns
+    # remove times not needed and junk columns
     df_times = df.filter(like='Time', axis=1).columns.tolist()
     df_unnamed = df.filter(like='Unnamed', axis=1).columns.tolist()
     df.drop(df_times, axis=1, inplace=True)
     df.drop(df_unnamed, axis=1, inplace=True)
     df.drop(['moonPhase', 'key', 'time', 'precipType'], axis=1, inplace=True)
 
-    #strip out non summer growing months
+    # strip out non summer growing months
     df = df.drop(df[df.month < 4].index)
     df = df.drop(df[df.month > 9].index)
+
+    # split out years
     df = df.drop(df[df.year < MIN_YEAR].index)
     df = df.drop(df[df.year > MAX_YEAR].index)
-
     return df
 
 
-def yield_dates(df,MIN_YEAR, TEST_SPLIT):
-
+def yield_dates(df, MIN_YEAR, TEST_SPLIT):
+    '''
+    :param df: pandas df of downloaded yield data
+    :param MIN_YEAR: 2010 (start of training set)
+    :param MAX_YEAR: (end of test set)
+    :return: returns the pre-processed dataframe
+    '''
     # remove unneeded timstamps, etc
     df.dropna(axis=1, how='all', inplace=True)
     df['county_name'] = df['county_name'].apply(lambda x: x.lower())
-    df.rename(columns={'county_name':'county','Value':'cyield','state_alpha':'state'}, inplace=True)
-    df_unnamed = df.filter(like='Unnamed', axis=1).columns.tolist()
+    df.rename(columns={'county_name': 'county', 'Value': 'cyield', 'state_alpha': 'state'}, inplace=True)
     df.drop('Unnamed: 0', axis=1, inplace=True)
-
 
     # drop outlier yield less than 40
 
-    #split out years
+    # split out years
     df = df.drop(df[df.year < MIN_YEAR].index)
     df = df.drop(df[df.year > TEST_SPLIT].index)
     return df
@@ -95,12 +91,12 @@ def join_weather_yield(wdf, ydf):
     # ========== Work magic on the weather file ==============
     wdf.drop('dates', axis=1, inplace=True)
     wdf['county'] = wdf['county'].apply(str.lower)
-    DROP_LIST = ['visibility','lat', 'long','month','windBearing', 'precipProbability','aveTemp', 'pressure',
-                 'windBearing','precipIntensityMax','cloudCover', 'temperatureMax', 'windSpeed',
+    DROP_LIST = ['visibility', 'lat', 'long', 'month', 'windBearing', 'precipProbability', 'aveTemp', 'pressure',
+                 'windBearing', 'precipIntensityMax', 'cloudCover', 'temperatureMax', 'windSpeed',
                  'apparentTemperatureMax']
 
     # ======== add new features here =========================
-    wdf['aveTemp'] = (wdf['temperatureMax'] + wdf['temperatureMin'])/2
+    wdf['aveTemp'] = (wdf['temperatureMax'] + wdf['temperatureMin']) / 2
     wdf['temp_delta'] = (wdf['temperatureMax'] - wdf['temperatureMin'])
     wdf['days_over42'] = wdf['temperatureMax'].map(lambda x: is_over(x, 42))
     wdf['days_under0'] = wdf['temperatureMin'].map(lambda x: is_under(x, -20))
@@ -113,17 +109,15 @@ def join_weather_yield(wdf, ydf):
     # wdf = wdf.drop(wdf[wdf.month > 9].index)
     wdf.drop(DROP_LIST, axis=1, inplace=True)
 
-
-
     # ======= prepare column list for sum and mean aggregations by state, county, year
     agg_dict = dict()
     cols_list = list(wdf.columns.tolist())
-    group_by_columns = ['county','state','year']
-    cols_to_sum = ['days_under0', 'days_over32', 'days_over42' , 'days_under_n10', 'precipAccumulation', 'precip']
+    group_by_columns = ['county', 'state', 'year']
+    cols_to_sum = ['days_under0', 'days_over32', 'days_over42', 'days_under_n10', 'precipAccumulation', 'precip']
     cols_to_aggregate = [x for x in cols_list if x not in group_by_columns]
     for i in cols_to_aggregate:
         if i in cols_to_sum:
-            agg_dict[i]= np.sum
+            agg_dict[i] = np.sum
         else:
             agg_dict[i] = np.mean
 
@@ -139,33 +133,38 @@ def join_weather_yield(wdf, ydf):
 
     # ========== Work magic on the yield file ==============
     ydf.groupby(group_by_columns).mean()
-    df_merged = pd.merge(ydf,wdf_years, how='left',on=['county','state','year'])
-    df_merged.dropna(axis=0,how='any',inplace=True)
+    df_merged = pd.merge(ydf, wdf_years, how='left', on=['county', 'state', 'year'])
+    df_merged.dropna(axis=0, how='any', inplace=True)
     return df_merged
 
 
-def is_over(x,val):
+def is_over(x, val):
     '''
     simple helper function for counting...
     :param x: value of data point
     :param val: comparision value
     :return: returns a value 1 if it is greater than val 0 if lower
     '''
-    if x>val: return 1
-    else: return 0
+    if x > val:
+        return 1
+    else:
+        return 0
 
-def is_under(x,val):
+
+def is_under(x, val):
     '''
     simple helper function for counting...
     :param x: value of data point
     :param val: comparision value
     :return: returns a value 0 if it is greater than val 1 if lower
     '''
-    if x<val: return 1
-    else: return 0
+    if x < val:
+        return 1
+    else:
+        return 0
 
 
-def my_ada(X,y,m_depth=3,n_est=28,rnd=None,lr=0.8225):
+def my_ada(X, y, m_depth=3, n_est=28, rnd=None, lr=0.8225):
     '''
     quick wrapping function for sklearn ada_boost analysis
     :param X:
@@ -176,14 +175,14 @@ def my_ada(X,y,m_depth=3,n_est=28,rnd=None,lr=0.8225):
     :param lr: learning rate
     :return: returns the model fully fitted and predicted
     '''
-    reg_ada = AdaBoostRegressor(DecisionTreeRegressor(max_depth=m_depth),\
-                                n_estimators=n_est,random_state=rnd, learning_rate=lr)
-    reg_ada.fit(X,y)
+    reg_ada = AdaBoostRegressor(DecisionTreeRegressor(max_depth=m_depth), \
+                                n_estimators=n_est, random_state=rnd, learning_rate=lr)
+    reg_ada.fit(X, y)
     reg_ada.predict(X)
     return reg_ada
 
 
-def feature_importance(cols,feat_imps):
+def feature_importance(cols, feat_imps):
     '''
     function to assign feature names to feature importance list out of sklearn
     :param cols: is the pands data series containing the list of features
@@ -193,21 +192,20 @@ def feature_importance(cols,feat_imps):
     df = pd.DataFrame()
     df['feat'] = cols
     df['imp'] = feat_imps
-    df.sort_values('imp',ascending=False, inplace=True)
+    df.sort_values('imp', ascending=False, inplace=True)
     df = df.loc[df['imp'] > 0]
     df.reset_index()
     # df.drop('index')
     return df
 
 
-
 if __name__ == '__main__':
 
     print 'Loading raw weather data....'
-    df_weather  = weather_dates(pd.read_csv(RAW_WEATHER_FILE),MIN_YEAR,TEST_SPLIT)
+    df_weather = weather_dates(pd.read_csv(RAW_WEATHER_FILE), MIN_YEAR, TEST_SPLIT)
 
     print 'Loading yield files.........'
-    df_yield = yield_dates(pd.read_csv(PROCESSED_YIELD),MIN_YEAR,TEST_SPLIT)
+    df_yield = yield_dates(pd.read_csv(PROCESSED_YIELD), MIN_YEAR, TEST_SPLIT)
 
     print 'combining the two files for analysis'
     df_join = join_weather_yield(df_weather, df_yield)
@@ -236,28 +234,28 @@ if __name__ == '__main__':
     print 'Running model on TRAIN? ', TRAIN
     if TRAIN == False:
         # =========== Load pickle of training session ========
-        with open('data/pickles/reg_ada_'+STATE+'_xtr.pkl') as f:
+        with open('data/pickles/reg_ada_' + STATE + '_xtr.pkl') as f:
             reg_ada = pickle.load(f)
     else:
         # ===========  Run Adaboost fit-pred  ================
         reg_ada = my_ada(X, y, m_depth=3, n_est=8, rnd=42, lr=1.28225)
 
         # ===========  Do GRIDSEARCH analysis ================
-        lr_range = np.linspace(0.1,10,100)
-        n_est = [int(i) for i in (np.linspace(5,100,1))]
-        params = {'n_estimators' : n_est, 'learning_rate':lr_range}
-        grid = GridSearchCV(estimator=reg_ada, param_grid=params,n_jobs=-1, return_train_score=True)
-        grid.fit(X,y)
-        _best_params =  grid.best_params_
+        lr_range = np.linspace(0.1, 10, 100)
+        n_est = [int(i) for i in (np.linspace(5, 100, 1))]
+        params = {'n_estimators': n_est, 'learning_rate': lr_range}
+        grid = GridSearchCV(estimator=reg_ada, param_grid=params, n_jobs=-1, return_train_score=True)
+        grid.fit(X, y)
+        _best_params = grid.best_params_
 
     # predict and score
     y_ada = reg_ada.predict(X)
     ada_mse = mse(y, y_ada)
     print '\n\n'
-    print 'TRAINING SET? ',TRAIN
-    print 'STATES: %s  Dates: %s --> %s' %(STATE,MIN_YEAR,TEST_SPLIT)
+    print 'TRAINING SET? ', TRAIN
+    print 'STATES: %s  Dates: %s --> %s' % (STATE, MIN_YEAR, TEST_SPLIT)
     print '================================================'
-    print 'Adaboost   r2:   ', reg_ada.score(X,y)
+    print 'Adaboost   r2:   ', reg_ada.score(X, y)
     print 'Adaboost  MSE:   ', ada_mse
     print 'Adaboost RMSE:   ', np.sqrt(ada_mse)
     print '================================================'
@@ -265,12 +263,12 @@ if __name__ == '__main__':
     print len(X.columns.tolist())
 
     # Extract table of most important features for later use if needed
-    feat_imp = feature_importance(X.columns.tolist(),reg_ada.feature_importances_)
+    feat_imp = feature_importance(X.columns.tolist(), reg_ada.feature_importances_)
     # print feat_imp
 
     # =========== Save pickle of training session ===========
     if TRAIN == True:
-        with open('data/pickles/reg_ada_'+STATE+'_xtr.pkl', 'wb') as f:
+        with open('data/pickles/reg_ada_' + STATE + '_xtr.pkl', 'wb') as f:
             pickle.dump(reg_ada, f)
 
             # =========== Plot overall y_true and y_predicted ===========
@@ -292,7 +290,7 @@ if __name__ == '__main__':
 
     # =========== Plot by State y_true and y_predicted ===========
     g = sns.FacetGrid(res, col='irig_flag', hue='state')
-    g.map(sns.regplot, 'y_true', 'y_pred', label='state', marker='o', scatter_kws={'s':80});
+    g.map(sns.regplot, 'y_true', 'y_pred', label='state', marker='o', scatter_kws={'s': 80});
     plt.xlim(0, 180)
     plt.ylim(0, 180)
     plt.legend()
@@ -300,14 +298,13 @@ if __name__ == '__main__':
 
     # =========== Plot by IRIG_FLAG y_true and y_predicted ===========
     g = sns.FacetGrid(res, col='state', hue='irig_flag')
-    g.map(sns.regplot, 'y_true', 'y_pred', label='state', marker='o', scatter_kws={'s':80});
+    g.map(sns.regplot, 'y_true', 'y_pred', label='state', marker='o', scatter_kws={'s': 80});
     plt.xlim(0, 180)
     plt.ylim(0, 180)
     plt.legend()
     plt.savefig
 
-
-    fig = plt.subplot(211)
+    fig = plt.subplot()
     plt.plot(res.y_true, marker='o', lw=0)
     plt.plot(res.y_pred, lw=2)
     # plt.title(STATE + ' regression performance', fontsize=25);
