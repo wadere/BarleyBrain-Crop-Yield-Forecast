@@ -13,9 +13,13 @@ app = Flask(__name__)
 def home_page():
     return render_template('index.html')
 
-@app.route('/score', methods=['GET'])
+@app.route('/score', methods=['GET,POST'])
 def score():
-    return render_template('score.html')
+    return '''
+    <h2>Barley Brain!</h2>
+    <img src='../../images/model_performance_train.jpg>
+    '''
+
 
 
 
