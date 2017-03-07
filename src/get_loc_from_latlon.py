@@ -8,15 +8,17 @@ def getplace(lat, lon):
     v = urlopen(url).read()
     j = json.loads(v)
     components = j['results'][0]['address_components']
+
+    for i in components:
+        print i
+
     country = town = None
     for c in components:
-        if "country" in c['types']:
+        if "state" in c['types']:
             country = c['long_name']
         if "postal_town" in c['types']:
             town = c['long_name']
     return town, country
 
 if __name__ == '__main__':
-    print(getplace(51.1, 0.1))
-    print(getplace(51.2, 0.1))
-    print(getplace(51.3, 0.1))
+    print(getplace(44.41085, -108.13577))

@@ -13,12 +13,9 @@ app = Flask(__name__)
 def home_page():
     return render_template('index.html')
 
-@app.route('/score', methods=['GET,POST'])
+@app.route('/EDA/', methods=['GET,POST'])
 def score():
-    return '''
-    <h2>Barley Brain!</h2>
-    <img src='../../images/model_performance_train.jpg>
-    '''
+    return render_template('EDA_gov_yields.html')
 
 
 
