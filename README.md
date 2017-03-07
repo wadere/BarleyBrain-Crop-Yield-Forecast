@@ -33,7 +33,7 @@ Data is loaded from the combined file and split into train and test sets.  For t
 #### TEST RESULTS
 The model initially way over-fit on the train data, and after reviewing in-stage Adaboost scoring, model was 'tuned' to remove over fitting as much as possible.  Resulting RMSE fit was 12.8 bushels/acre.  Not bad given the wide range of things farms can do to their fields in the course of a year.  The following chart shows model predicted yield (green line) and actual yield (blue dots).
 
-![test_image](images/test_results1.png)
+![test_image](images/test_results_1.png)
 
 
 
