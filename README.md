@@ -1,7 +1,7 @@
 ![testimage](images/crop_region_2015.png)
 # Welcome to Barley Brain!
 
-Barley Brain is a computer model to forecast regional barley yields in Colorado, Wyoming, Idaho and Montana.  The model extracts data from public web sites such as NASA, the US Deparment of Agriculture, and Darksky.net (weather). Aggregating satellite images, county information, historic weather, and reported yield from 2010 to present.  
+Barley Brain is a computer model to forecast regional barley yields in Colorado, Wyoming, Idaho and Montana.  The model extracts data from public web sites such as NASA(satellite images), the US Department of Agriculture (yield information), and Darksky.net (weather). Aggregating satellite images, county information, historic weather, and reported yield from 2010 to present.  
 
 
 #### Technology used
@@ -24,14 +24,14 @@ Since Barley was the focus, only the barley data was downloaded.  Note that all 
  
 #### Model and Performance
 Three models were run on the data, Ordinay Least Squares, RandomForests, and Adaboost.
-Primary selected model was Adaboost, as it provided the best RMSE (+/- 12.8 bussels/acre on the test set.)
+Primary selected model was Adaboost, as it provided the best RMSE (+/- 12.8 bushels/acre on the test set.)
 Data is loaded from the combined file and split into train and test sets.  For training mode, the model discards all information not within the 2010 to 2014 timeframe. Similary the test case drops years less than and including 2014, leaving only 2015 and 2016 data.
 
 
 
 
 #### TEST RESULTS
-The model initally way overfit on the train data, and after reviewing in-stage Adaboost scoring, model was 'tuned' to remove over fitting as much as possible.  Resulting RMSE fit was 12.8 bussels/acre.  Not bad given the wide range of things farms can do to their fields in the course of a year.  The following chart shows model predicted yield (green line) and actual yield (blue dots).
+The model initially way overfit on the train data, and after reviewing in-stage Adaboost scoring, model was 'tuned' to remove over fitting as much as possible.  Resulting RMSE fit was 12.8 bushels/acre.  Not bad given the wide range of things farms can do to their fields in the course of a year.  The following chart shows model predicted yield (green line) and actual yield (blue dots).
 
 ![test_image](images/test_results1.png)
 
@@ -40,8 +40,8 @@ The model initally way overfit on the train data, and after reviewing in-stage A
 
 #### Repo Organization:
 * data   --> Storage for online data and file processing
-* eda    --> Holds jupyter notebooks with EDA analysis
-* images --> Images for readme and from eda analysis
+* eda    --> Holds Jupyter Notebooks with EDA analysis
+* images --> Images for Readme and from EDA analysis
 * web_app -> Just like it says
 * src    --> Holds the helper functions, code to extract 
                 information from the web

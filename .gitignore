@@ -11,3 +11,5 @@
 .DS_Store
 data/LANDSAT
 data/NDVI_regional
+/.gitignore
+data/darksky/
