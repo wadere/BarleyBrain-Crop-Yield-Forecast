@@ -29,8 +29,8 @@ class Transform(object):
 
 if __name__=='__main__':
     #testing
-    #s_srs=26986
-    #t_srs=4326
+    s_srs=26986
+    t_srs=4326
     #in_csv='in_file.csv'
     #out_csv='out_file.csv'
 

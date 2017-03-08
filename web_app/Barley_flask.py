@@ -24,7 +24,12 @@ def eda():
 
 @app.route('/github', methods=['GET'])
 def github():
-    return render_template('../static/')
+    return redirect('https://github.com/wadere/Barley_Brain')
+
+@app.route('/linkedin', methods=['GET'])
+def linkedin():
+    return redirect('https://www.linkedin.com/in/wadere/')
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
