@@ -3,6 +3,7 @@ import cPickle as pickle
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 from sklearn.ensemble import AdaBoostRegressor
 from sklearn.metrics import mean_squared_error as mse
@@ -298,19 +299,22 @@ if __name__ == '__main__':
     plt.savefig(IMAGES_FOLDER + 'facet_irig_2.jpg')
 
     # =========== Plot by IRIG_FLAG y_true and y_predicted ===========
-    g = sns.FacetGrid(res, col='state', hue='irig_flag')
+    g = sns.FacetGrid(res, col='state', row='irig_flag', hue='irig_flag')
     g.map(sns.regplot, 'y_true', 'y_pred', label='state', marker='o', scatter_kws={'s': 80});
     plt.xlim(0, 180)
     plt.ylim(0, 180)
+    plt.xticks(size=15)
+    plt.yticks(size=15)
     plt.legend()
     plt.savefig(IMAGES_FOLDER + 'facet_irig_1.jpg')
 
     fig = plt.figure(figsize=(10,4))
     plt.plot(res.y_true, marker='o', lw=0)
     plt.plot(res.y_pred, lw=2)
+
     # plt.title(STATE + ' regression performance', fontsize=25);
-    plt.xlabel('data-point')
-    plt.ylabel('yield (bu/acre)')
+    plt.xlabel('data-point', fontsize=1)
+    plt.ylabel('yield (bu/acre)', fontsize=20)
     plt.ylim([0, 180])
     # plt.title('Model Performance', fontsize=30)
     plt.savefig(IMAGES_FOLDER + 'model_performance.jpg')
