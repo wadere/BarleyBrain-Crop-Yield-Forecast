@@ -18,9 +18,9 @@ def home_page():
 def capstone():
     return render_template('capstone.html')
 
-@app.route('/eda', methods=['GET'])
-def eda():
-    return render_template('EDA_gov_yields.html')
+@app.route('/resume', methods=['GET'])
+def resume():
+    return redirect('http://resumup.com/25278679/online_resume/')
 
 @app.route('/github', methods=['GET'])
 def github():
