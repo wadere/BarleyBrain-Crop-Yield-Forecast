@@ -46,14 +46,14 @@ if __name__ == '__main__':
     lon = -122.4233
     county = 'WELD'
     state = 'CO'
-    COUNTY_LATS= '../data/counties/county_lat_lng.csv'
+    COUNTY_LATS= 'data/counties/county_lat_lng.csv'
 
-    S_YEAR = 2014
-    S_MONTH = 10
+    S_YEAR = 2009
+    S_MONTH = 04
     S_DAY = 01
-    E_YEAR = 2016
-    E_MONTH = 01
-    E_DAY = 10
+    E_YEAR = 2009
+    E_MONTH = 10
+    E_DAY = 01
     start_time = date(S_YEAR, S_MONTH, S_DAY)
     end_time = date(E_YEAR, E_MONTH, E_DAY)
     myts = int(time.mktime(start_time.timetuple()))
@@ -65,6 +65,7 @@ if __name__ == '__main__':
     county_df = pd.read_csv(COUNTY_LATS)
     weather_df = get_weather(API_KEY,lat,lon,state,county,start_time)
     full_df = weather_df
+    
 
     # =========== Pull all data by county, then by date ==========================
     for item in range(1,len(county_df)):   #==> len(county_df) 187
