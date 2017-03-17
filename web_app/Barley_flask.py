@@ -48,4 +48,4 @@ def galvanize():
     return redirect('https://talent.galvanize.com')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8105, threaded=True)
+    app.run(host='0.0.0.0', port=80, threaded=True)
