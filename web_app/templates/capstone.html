@@ -20,16 +20,16 @@ function detectBrowser()
     var cropped = window.location.href.slice(0,slashIndex+1);
     
     if (fallback) {
-        window.location.replace( cropped + "assets/fallback/index.html" );
+        window.location.replace( cropped + "../static/assets//fallback/index.html" );
     }
     else {
-        window.location.replace( cropped + "assets/player/KeynoteDHTMLPlayer.html" );
+        window.location.replace( cropped + "../static/assets//player/KeynoteDHTMLPlayer.html" );
     }
     */
     var slashIndex = window.location.href.lastIndexOf("/");
     var cropped = window.location.href.slice(0,slashIndex+1);
     
-    window.location.replace(cropped + "static/player/KeynoteDHTMLPlayer.html");
+    window.location.replace(cropped + "../static/player/KeynoteDHTMLPlayer.html");
 
 }
 

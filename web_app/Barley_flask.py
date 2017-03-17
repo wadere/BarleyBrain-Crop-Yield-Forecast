@@ -14,22 +14,38 @@ app = Flask(__name__)
 def home_page():
     return render_template('index.html')
 
-@app.route('/capstone', methods=['GET'])
-def capstone():
-    return render_template('capstone.html')
+@app.route('/template', methods=['GET'])
+def template():
+    return render_template('/template.html')
 
-@app.route('/resume', methods=['GET'])
-def resume():
-    return redirect('http://resumup.com/25278679/online_resume/')
+@app.route('/landsat', methods=['GET'])
+def landsat():
+    return redirect('https://www.nasa.gov/mission_pages/landsat/overview/index.html')
 
 @app.route('/github', methods=['GET'])
 def github():
-    return redirect('https://github.com/wadere/Barley_Brain')
+    return redirect('https://github.com/wadere/BarleyBrain')
+
+@app.route('/github_h', methods=['GET'])
+def github_h():
+    return redirect('https://github.com/wadere')
 
 @app.route('/linkedin', methods=['GET'])
 def linkedin():
-    return redirect('https://www.linkedin.com/in/wadere/')
+    return redirect('https://www.linkedin.com/in/wadere')
 
+@app.route('/NASS', methods=['GET'])
+def nass():
+    return redirect('https://www.nass.usda.gov')
+
+@app.route('/darksky', methods=['GET'])
+def darksky():
+    return redirect('https://www.darksky.net')
+
+
+@app.route('/galvanize', methods=['GET'])
+def galvanize():
+    return redirect('https://talent.galvanize.com')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='0.0.0.0', debug=True, port=8080)
