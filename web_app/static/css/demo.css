@@ -10,11 +10,11 @@
 }
 .tim-title{
     margin-top: 30px;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
     min-height: 32px;
 }
 .tim-title.text-center{
-    margin-bottom: 50px;
+    margin-bottom: 25px;
 }
 .tim-typo{
     padding-left: 25%;
@@ -637,7 +637,7 @@
     font-weight: 300;
 }
 
-/* get shite done mic */
+/* get stuffe done mic */
 .motto .square{
     padding: 5px 11px;
     height: auto;

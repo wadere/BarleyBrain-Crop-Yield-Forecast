@@ -154,7 +154,7 @@
 
 .parallax{
   width:100%;
-  height:570px;
+  height:370px;
  
   display: block;
   background-attachment: fixed;
@@ -230,7 +230,7 @@
 .parallax .motto .border{
     float: left;
     border: 3px solid #FFFFFF;
-    padding: 0px 30px;
+    padding: 0px 0px;
     text-align: center;
 }
 .parallax .motto .no-right-border{
@@ -637,7 +637,7 @@
     font-weight: 300;
 }
 
-/* get shite done mic */
+/* get stuffe done mic */
 .motto .square{
     padding: 5px 11px;
     height: auto;

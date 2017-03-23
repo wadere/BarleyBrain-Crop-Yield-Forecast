@@ -16,7 +16,7 @@ def home_page():
 
 @app.route('/template', methods=['GET'])
 def template():
-    return render_template('/template.html')
+    return render_template('template.html')
 
 @app.route('/landsat', methods=['GET'])
 def landsat():
@@ -48,4 +48,4 @@ def galvanize():
     return redirect('https://talent.galvanize.com')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, threaded=True)
+    app.run(host='0.0.0.0', port=8080, threaded=True)

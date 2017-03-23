@@ -22,9 +22,10 @@
     <link href="../static/assets/css/pe-icon-7-stroke.css" rel="stylesheet" />
 </head>
 
+<nav class="navbar navbar-ct-azure navbar-transparent navbar-fixed-top" role="navigation">
+
 <body>
 
-<nav class="navbar navbar-ct-azure navbar-transparent navbar-fixed-top" role="navigation">
     <div class="container">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
@@ -92,7 +93,7 @@
             <!--<li><a href="" class="btn btn-round btn-default">Sign in</a></li>-->
        </ul>
       
-    <!--</div>&lt;!&ndash; /.navbar-collapse &ndash;&gt;-->
+    </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
 
@@ -105,8 +106,8 @@
         </div>
         <div class="motto">
             <div>Barley Brain</div>
-                <label class="pro square">Beta</label>
-                <div><h3>Dont <b>guess</b> the future, <b>KNOW</b> it!</h3></div>
+                <label class="pro square">NEW</label>
+                <div><h2>Dont <b>guess</b> the future, <b>KNOW</b> it!</h2></div>
         </div>
     </div>
 </div> <!-- wrapper -->
@@ -116,8 +117,8 @@
                <h1 class="text-center">Welcome to BarleyBrain <br> <small class="subtitle">Created as part of a Data Science Capstone</small></h1>
                 <p><b>Barley Brain</b> is a computer model to forecast regional barley yields in Colorado, Wyoming, Idaho and Montana. The model extracts data from public web sites such as NASA(satellite images), the US Department of Agriculture (yield information), and Darksky.net (weather). Aggregating satellite images, county information, historic weather, and reported yield from 2010 to present.</p>
                 <p><h3><b>Data Collection</b></h3>
-                <p><b>WEATHER:</b>> Data for Barley Brain comes from a variety places. Historic weather conditions were downloaded from the Darksky.net (http://www.Darksky.net) servers. Darksky was chosen as it is free (up to 1000 calls per day), and can also handle the task of predicting weather well into the future. Weather data is downloaded in advance (data back to 2010 is in data/weather), the only processing of data was to drop unused columns during the download, in an effort to reduce file size. Additionally the daily weather data is convert to yearly averages so it can be used with the yield data.</p>
-                <p><b>YIELDS:</b>> The USDA's(https://www.usda.gov/wps/portal/usda/usdahome) National Agricultural Statistics Service, has an online collection of historical crop yields. This data is automatically collected by the model for cleaning and combining with the weather data. Since Barley was the focus, only the barley data was downloaded. Note that all state data gets downloaded so that in the future the model can be easily extended to any state or region.</p>
+                <p><b>WEATHER:</b> Data for Barley Brain comes from a variety places. Historic weather conditions were downloaded from the Darksky.net (http://www.Darksky.net) servers. Darksky was chosen as it is free (up to 1000 calls per day), and can also handle the task of predicting weather well into the future. Weather data is downloaded in advance (data back to 2010 is in data/weather), the only processing of data was to drop unused columns during the download, in an effort to reduce file size. Additionally the daily weather data is convert to yearly averages so it can be used with the yield data.</p>
+                <p><b>YIELDS:</b> The USDA's(https://www.usda.gov/wps/portal/usda/usdahome) National Agricultural Statistics Service, has an online collection of historical crop yields. This data is automatically collected by the model for cleaning and combining with the weather data. Since Barley was the focus, only the barley data was downloaded. Note that all state data gets downloaded so that in the future the model can be easily extended to any state or region.</p>
                    <!--     end extras -->
             </div>
             <div class="space"></div>
@@ -141,11 +142,11 @@
     <script src="../static/assets/js/jquery.tagsinput.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
 
-    <!--  Get Shit Done Kit PRO Core javascript 	 -->
-	<script src="../static/assets/js/get-shit-done.js"></script>
+    <!--  Get stuff Done Kit PRO Core javascript 	 -->
+	<script src="../static/assets/js/get-stuff-done.js"></script>
 
-    <!--  Get Shit Done Kit PRO methods used for demo purpose      -->
-    <script src="../static/assets/js/demo.js"></script>
+    <!--  Get stuff Done Kit PRO methods used for demo purpose      -->
+    <!--<script src="../static/assets/js/demo.js"></script>-->
     	
     <script type="text/javascript">
         $().ready(function(){
