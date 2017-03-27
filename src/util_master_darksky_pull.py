@@ -41,17 +41,17 @@ def make_unixdate(xdate):
 
 
 if __name__ == '__main__':
-    API_KEY = ""
+    API_KEY = "b96da89533e3d3e1f40f560603a30fee"
     lat = 37.8267
     lon = -122.4233
     county = 'WELD'
     state = 'CO'
     COUNTY_LATS= 'data/counties/county_lat_lng.csv'
 
-    S_YEAR = 2009
+    S_YEAR = 2017
     S_MONTH = 04
     S_DAY = 01
-    E_YEAR = 2009
+    E_YEAR = 2017
     E_MONTH = 10
     E_DAY = 01
     start_time = date(S_YEAR, S_MONTH, S_DAY)
@@ -59,29 +59,39 @@ if __name__ == '__main__':
     myts = int(time.mktime(start_time.timetuple()))
 
     # setup daterange for datapulls
-    mydates = pd.date_range(start_time, end_time, freq='D').tolist()
+    mydates = pd.DataFrame(pd.date_range(start_time, end_time, freq='D').tolist())
+    mydates['dates'] = mydates[0]
+    mydates['month'] = [i.month for i in mydates['dates']]
+    mydates = mydates.drop(mydates[mydates.month >= E_MONTH].index)
+    mydates = mydates.drop(mydates[mydates.month < S_MONTH].index)
 
     # jj=  os.getcwd()
     county_df = pd.read_csv(COUNTY_LATS)
-    weather_df = get_weather(API_KEY,lat,lon,state,county,start_time)
+    weather_df = get_weather(API_KEY, lat, lon, state, county, start_time)
     full_df = weather_df
-    
 
     # =========== Pull all data by county, then by date ==========================
-    for item in range(1,len(county_df)):   #==> len(county_df) 187
+    for item in range(1, len(county_df)):  # ==> len(county_df) 187
         full_df = weather_df
         state = county_df['USPS'][item]
         county = county_df['NAME'][item]
         lon = county_df['LONG'][item]
         lat = county_df['LAT'][item]
+        f_name = 'data/darksky/' + str(S_YEAR) + '-' + str(E_YEAR) + '__' + state + '_' + county + '.csv'
 
-        for xd in mydates:
-            utcday = make_unixdate(xd)
-            print xd, utcday, state, county, round(lat, 4), round(lon, 4)
-            day_df = pd.DataFrame(get_weather(API_KEY, lat, lon, state, county, xd))
-            full_df = full_df.append(day_df)
+        # pool = ThreadPool(4)
+        # results = pool.map(get_weather(API_KEY,lat,lon,state,county,xd),mydates)
+        #
+        print  '%s of %s....checking if record exists for : %s' % (item, len(county_df), f_name)
+        if not os.path.exists(f_name):
+            if state != "XX":
+                for xd in mydates.dates:
+                    # utcday = make_unixdate(xd)
+                    print item, xd, state, county, round(lat, 4), round(lon, 4)
+                    day_df = pd.DataFrame(get_weather(API_KEY, lat, lon, state, county, xd))
+                    full_df = full_df.append(day_df)
 
-        # save completed county data
-        f_name = str(S_YEAR) + '-' + str(E_YEAR) + '__' + state + '_' + county + '.csv'
-        print f_name
-        full_df.to_csv(f_name)
+                # save completed county data
+                print item, ' ', f_name
+                full_df.drop_duplicates(keep='first', inplace=True)
+                full_df.to_csv(f_name, index=False)

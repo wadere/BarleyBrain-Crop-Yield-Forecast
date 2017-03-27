@@ -9,7 +9,7 @@ from datetime import datetime
 
 
 MIN_YEAR = 2010
-MAX_YEAR = 2016
+MAX_YEAR = 2020
 RAW_WEATHER_FILE = 'data/weather/weather_all.csv'
 PROC_WEATHER_FILE = 'data/weather/weather_clean.csv'
 

@@ -1,14 +1,15 @@
 import cPickle as pickle
 
-import numpy as np
-import pandas as pd
-import seaborn as sns
-import matplotlib as mpl
-from matplotlib import pyplot as plt
 from sklearn.ensemble import AdaBoostRegressor
 from sklearn.metrics import mean_squared_error as mse
 from sklearn.model_selection import GridSearchCV
 from sklearn.tree import DecisionTreeRegressor
+
+import matplotlib as mpl
+mpl.use('agg')
+from matplotlib import pyplot as plt
+import seaborn as sns
+
 from src.process_weather import *
 from src.util_download_yields import *
 
@@ -25,10 +26,10 @@ IMAGES_FOLDER = 'images/'
 # ====== Key CONSTANTS ======================================
 # ===========================================================
 
-TRAIN = False  # ==> Set mode model is in
+TRAIN = True  # ==> Set mode model is in
 MIN_YEAR = 2010  # ==> Set min year to earliest
-MAX_YEAR = 2017  # ==> Max year for full TTS data
-TEST_SPLIT = 2014  # ==> Sets year Train test split
+MAX_YEAR = 2016  # ==> Max year for full TTS data
+TEST_SPLIT = 2016  # ==> Sets year Train test split
 STATE = 'ALL'  # ==> ALL is ['CO', 'MT', 'ID', 'WY']
 
 if TRAIN == False:
@@ -217,10 +218,10 @@ if __name__ == '__main__':
 
     # Code block for fine tuning and EDA experimentation
     # ==============================================
-    _dummy = df_join[df_join['cyield'] >= 50]
-    _dummy = df_join[df_join['cyield'] <= 180]
-    if not STATE == 'ALL': _dummy = df_join[df_join.state != 'ID']
-    sfl = _dummy
+    _dummy = df_join[df_join['cyield'] >= 45]
+    _dummy = _dummy[_dummy['cyield'] <= 170]
+    if not STATE == 'ALL': _dummy = _dummy[_dummy.state != 'ID']
+    sfl = _dummy.copy()
     _dummy.pop('year')
     _dummy.pop('county')
     _dummy = pd.get_dummies((_dummy))
@@ -251,6 +252,7 @@ if __name__ == '__main__':
         grid = GridSearchCV(estimator=reg_ada, param_grid=params, n_jobs=-1, return_train_score=True)
         grid.fit(X, y)
         _best_params = grid.best_params_
+        print _best_params
 
     # predict and score
     y_ada = reg_ada.predict(X)
@@ -276,59 +278,59 @@ if __name__ == '__main__':
     # prep dataframe of inputs and predictions for plotting and later use
     res = sfl
     res['y_pred'] = y_ada
-    res.to_csv('data/forecast.csv', index=False)
+    # res.to_csv('data/forecast.csv', index=False)
     df_plt = res
     df_plt['y_true'] = y
 
-    plt.close('all')
-    # =========== Plot by State y_true and y_predicted ===========
-    fig = plt.figure()
-    sns.regplot(x='y_true', y='y_pred', data=df_plt, label='state', marker='o', scatter_kws={'s': 80});
-    plt.title(STATE + ' regression performance', fontsize=30);
-    plt.xlabel('y_true (bu/acre)')
-    plt.ylabel('y_pred (bu/acre)')
-    plt.legend()
-    plt.savefig(IMAGES_FOLDER + 'model_yt_yp.jpg')
-
-    # =========== Plot by State y_true and y_predicted ===========
-    g = sns.FacetGrid(res, col='irig_flag', hue='state')
-    g.map(sns.regplot, 'y_true', 'y_pred', label='state', marker='o', scatter_kws={'s': 80});
-    plt.xlim(0, 180)
-    plt.ylim(0, 180)
-    plt.legend()
-    plt.savefig(IMAGES_FOLDER + 'facet_irig_2.jpg')
-
-    # =========== Plot by IRIG_FLAG y_true and y_predicted ===========
-    g = sns.FacetGrid(res, col='state', row='irig_flag', hue='irig_flag')
-    g.map(sns.regplot, 'y_true', 'y_pred', label='state', marker='o', scatter_kws={'s': 80});
-    plt.xlim(0, 180)
-    plt.ylim(0, 180)
-    plt.xticks(size=15)
-    plt.yticks(size=15)
-    plt.legend()
-    plt.savefig(IMAGES_FOLDER + 'facet_irig_1.jpg')
-
-    fig = plt.figure(figsize=(10,4))
-    plt.plot(res.y_true, marker='o', lw=0)
-    plt.plot(res.y_pred, lw=2)
-
-    # plt.title(STATE + ' regression performance', fontsize=25);
-    plt.xlabel('data-point', fontsize=1)
-    plt.ylabel('yield (bu/acre)', fontsize=20)
-    plt.ylim([0, 180])
-    # plt.title('Model Performance', fontsize=30)
-    plt.savefig(IMAGES_FOLDER + 'model_performance.jpg')
-
-    # generate the feature chart with the irig_flag and save it to file
-    feat_imp.set_index('feat')
-    fig = plt.subplot()
-    ax = sns.barplot(feat_imp.feat[:10], feat_imp.imp[:10], palette='Blues_d')
-    plt.xticks(rotation=30)
-    plt.savefig(IMAGES_FOLDER + 'features1.png')
-
-    # generate the feature chart less the irig_flag and save it to file
-    feat_imp.set_index('feat')
-    fig = plt.subplot()
-    ax = sns.barplot(feat_imp.feat[1:10], feat_imp.imp[1:10], palette='Blues_d')
-    plt.xticks(rotation=30)
-    plt.savefig(IMAGES_FOLDER + 'features2.png')
+    # plt.close('all')
+    # # =========== Plot by State y_true and y_predicted ===========
+    # fig = plt.figure()
+    # sns.regplot(x='y_true', y='y_pred', data=df_plt, label='state', marker='o', scatter_kws={'s': 80});
+    # plt.title(STATE + ' regression performance', fontsize=30);
+    # plt.xlabel('y_true (bu/acre)')
+    # plt.ylabel('y_pred (bu/acre)')
+    # plt.legend()
+    # plt.savefig(IMAGES_FOLDER + 'model_yt_yp.jpg')
+    #
+    # # =========== Plot by State y_true and y_predicted ===========
+    # g = sns.FacetGrid(res, col='irig_flag', hue='state')
+    # g.map(sns.regplot, 'y_true', 'y_pred', label='state', marker='o', scatter_kws={'s': 80});
+    # plt.xlim(0, 180)
+    # plt.ylim(0, 180)
+    # plt.legend()
+    # plt.savefig(IMAGES_FOLDER + 'facet_irig_2.jpg')
+    #
+    # # =========== Plot by IRIG_FLAG y_true and y_predicted ===========
+    # g = sns.FacetGrid(res, col='state', row='irig_flag', hue='irig_flag')
+    # g.map(sns.regplot, 'y_true', 'y_pred', label='state', marker='o', scatter_kws={'s': 80});
+    # plt.xlim(0, 180)
+    # plt.ylim(0, 180)
+    # plt.xticks(size=15)
+    # plt.yticks(size=15)
+    # plt.legend()
+    # plt.savefig(IMAGES_FOLDER + 'facet_irig_1.jpg')
+    #
+    # fig = plt.figure(figsize=(10,4))
+    # plt.plot(res.y_true, marker='o', lw=0)
+    # plt.plot(res.y_pred, lw=2)
+    #
+    # # plt.title(STATE + ' regression performance', fontsize=25);
+    # plt.xlabel('data-point', fontsize=1)
+    # plt.ylabel('yield (bu/acre)', fontsize=20)
+    # plt.ylim([0, 180])
+    # # plt.title('Model Performance', fontsize=30)
+    # plt.savefig(IMAGES_FOLDER + 'model_performance.jpg')
+    #
+    # # generate the feature chart with the irig_flag and save it to file
+    # feat_imp.set_index('feat')
+    # fig = plt.subplot()
+    # ax = sns.barplot(feat_imp.feat[:10], feat_imp.imp[:10], palette='Blues_d')
+    # plt.xticks(rotation=30)
+    # plt.savefig(IMAGES_FOLDER + 'features1.png')
+    #
+    # # generate the feature chart less the irig_flag and save it to file
+    # feat_imp.set_index('feat')
+    # fig = plt.subplot()
+    # ax = sns.barplot(feat_imp.feat[1:10], feat_imp.imp[1:10], palette='Blues_d')
+    # plt.xticks(rotation=30)
+    # plt.savefig(IMAGES_FOLDER + 'features2.png')

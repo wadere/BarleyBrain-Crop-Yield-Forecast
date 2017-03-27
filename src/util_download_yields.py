@@ -10,7 +10,7 @@ import scipy.stats as stats
 # import seaborn as sns
 
 
-def get_gov_yield(syear=2010, eyear=2017, state='CO'):
+def get_gov_yield(syear=2005, eyear=2020, state='CO'):
     # Make API call
     url = "http://quickstats.nass.usda.gov/api/api_GET/?" + \
           "key={}&".format(os.environ["NASS_API_KEY"]) + \
